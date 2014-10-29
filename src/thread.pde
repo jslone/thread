@@ -1,11 +1,11 @@
-float dt = 0.1;
-int continuity = 3;
+float dt = 0.05;
+int continuity = 4;
 color bgcolor = color(100);
 int radius = 10;
 int waitFrames = 60;
 int framesLeft = 0;
 int colorDist = 5;
-float startSpeed = 5.0;
+float startSpeed = 10.0;
 
 ArrayList threads;
 
@@ -64,6 +64,13 @@ void draw() {
   framesLeft--;
 }
 
+void clamp(Pvector v, float l) {
+  if(v.mag() > l) {
+    v.normalize();
+    v.mult(l);
+  }
+}
+
 class Thread {
   PVector[] vs;
   color c;
@@ -100,6 +107,7 @@ class Thread {
     for(int i = 1; i < continuity - 1; i++) {
       vs[i].add(PVector.mult(vs[i+1],dt));
     }
+    clamp(vs[1],radius/(2*dt));
     vs[continuity-1] = PVector.random2D();
     vs[continuity-1].mult(2);
   }
