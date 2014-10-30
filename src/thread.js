@@ -5,7 +5,6 @@ var gurl = 'https://threadstweets.herokuapp.com/good';
 var burl = 'https://threadstweets.herokuapp.com/bad';
 
 var addTweet = null;
-var n = 0;
 
 function regAddTweet(f) {
   addTweet = f;
