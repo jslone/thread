@@ -17,8 +17,13 @@ void draw () {
   background(c,0);
   for(int i = 0; i < tweets.size();i++) {
     Tweet tweet = tweets.get(i);
-    tweet.update();
-    tweet.draw();
+    if(tweet.update()) {
+      tweets.remove(i);
+      i--;
+    }
+    else {
+      tweet.draw();
+    }
   }
 }
 
@@ -40,9 +45,8 @@ class Tweet {
   }
 
   boolean update() {
-    if(alpha > 0) {
-      alpha--;
-    }
+    alpha--;
+    return alpha <= 0;
   }
 
   void draw() {
