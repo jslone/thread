@@ -2,21 +2,22 @@ float dt = 0.05;
 int continuity = 4;
 color bgcolor = color(100);
 int radius = 10;
-int waitFrames = 60;
+int waitFrames = 120;
 int framesLeft = 0;
 int colorDist = 5;
 float startSpeed = 10.0;
+float deltaTextAlpha = 0.05;
 
-ArrayList threads;
+
+ArrayList<Thread> threads;
 
 void setup() {
   background(bgcolor);
   size(600,400);
   noStroke();
-  threads = new ArrayList();
+  threads = new ArrayList<Thread>();
   threads.add(new Thread());
   threads.add(new Thread());
-  setupText();
 }
 
 float posMod(float x, int n) {
@@ -37,29 +38,16 @@ void printColor(color c) {
 }
 
 void draw() {
-  int size = threads.size();
-  for(int i = 0; i < size; i++) {
-    Thread thread = (Thread)threads.get(i);
+  loadPixels();
+  for(int i = 0; i < threads.size(); i++) {
+    Thread thread = threads.get(i);
     fill(thread.c);
-    thread.update();
-    if(framesLeft <= 0) {
-      loadPixels();
-      PVector v = thread.vs[1].get();
-      v.normalize();
-      v.mult(radius);
-      v.add(thread.vs[0]);
-      int x = (int)posMod(v.x,width);
-      int y = (int)posMod(v.y,height);
-      int index = x + width*y;
-      if(!sameColor(pixels[index],thread.c)) {
-        if(!sameColor(pixels[index],bgcolor)) {
-          threads.add(new Thread(v,thread.c,pixels[index]));
-          addword();
-          framesLeft = waitFrames;
-        }
-      }
+    if(thread.update()) {
+      Thread nt = threads.get(threads.size()-1);
+      getTweet(red(nt.c) >= blue(nt.c), thread.vs[0].get());
+      framesLeft = waitFrames;
     }
-    ellipse(thread.vs[0].x,thread.vs[0].y,radius,radius);
+    thread.draw();
   }
   framesLeft--;
 }
@@ -100,7 +88,7 @@ class Thread {
               (blue(c1)+blue(c2)+blue(c3))/3);
   }
 
-  void update() {
+  boolean update() {
     vs[0].add(PVector.mult(vs[1],dt));
     vs[0].x = posMod(vs[0].x,width);
     vs[0].y = posMod(vs[0].y,height);
@@ -110,5 +98,26 @@ class Thread {
     clamp(vs[1],radius/(2*dt));
     vs[continuity-1] = PVector.random2D();
     vs[continuity-1].mult(2);
+
+    if(framesLeft <= 0) {
+      PVector v = vs[1].get();
+      v.normalize();
+      v.mult(radius);
+      v.add(vs[0]);
+      int x = (int)posMod(v.x,width);
+      int y = (int)posMod(v.y,height);
+      int index = x + width*y;
+      if(pixels[index] != c) {
+        if(pixels[index] != bgcolor) {
+          threads.add(new Thread(v,c,pixels[index]));
+          return true;
+        }
+      }
+    }
+    return false;
+  }
+
+  void draw() {
+    ellipse(vs[0].x,vs[0].y,radius,radius);
   }
 }

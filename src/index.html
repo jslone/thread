@@ -1,9 +1,17 @@
 <script src="//ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
-<script src="//cdnjs.cloudflare.com/ajax/libs/processing.js/1.4.8/processing.min.js"></script>
-<style>.flex-video{overflow:scroll;}</style>
-<canvas id="pjs"></canvas>
-<script type="application/processing" data-processing-target="pjs">
+<script src="//cdnjs.cloudflare.com/ajax/libs/processing.js/1.4.8/processing.js"></script>
+<link href="style.css?__inline=true" rel="stylesheet" />
+<div id="thread-layers">
+  <canvas id="thread" class="layer"></canvas>
+  <canvas id="twitter" class="layer"></canvas>
+</div>
+<div id="text">
+</div>
+<script type="application/processing" data-processing-target="thread">
 <inline src="thread.pde" />
+</script>
+<script type="application/processing" data-processing-target="twitter">
+<inline src="twitter.pde" />
 </script>
 <script type="application/javascript">
 <inline src="thread.js" />
